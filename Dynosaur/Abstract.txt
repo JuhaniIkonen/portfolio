@@ -1,0 +1,8 @@
+Tavoitteena on tehdä peli, jossa pelaaja hyppii tasolta toiselle ylöspäin aina mahdollisimman korkealle. Pistelasku tulee pelaajan korkeuskoordinaatin (y) myötä.
+peli tallentaa huippupisteet omaan tiedostoonsa nimellä, jonka se kysyy pelin loppuessa.
+Pelissä on valikko josta voi valita uuden pelin, huipputulokset tai lopeta peli.
+peli päättyy kun pelaaja putoaa tasoilta alas.
+
+Hyppymekaniikkaan "latausominaisuus" voisi olla extra boonusta, jos saisin sen tehtyä.
+
+pelin tempo on rauhallinen. Peli luo automattisesti uusia tasoja joille hypätä, niinikään poistaa vanhoja jotka jäävät ruudun alle.
