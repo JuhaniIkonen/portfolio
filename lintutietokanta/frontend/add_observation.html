@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ilmoita havainto</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+   
+</head>
+<body>
+  <script>logged()</script>
+    <img src="images/logoW1920px.png">
+    <nav>
+        <ul class="leftNav">
+          <li><a href="dashboard.html">Etusivu</a></li>
+          <li><a href="add_observation.html">Ilmoita havaintoja</a></li>
+          <li><a href="browse_observations.html">Selaa havaintoja</a></li>
+          <li><a href="forum.html">Kehitysideoita</a></li>
+        </ul>
+        
+        <ul class="rightNav">
+            <li id="loggedInUser">Kirjautuneena: </li>
+            <li><button id="logoutButton">Logout</button></li>
+        </ul>
+      </nav>
+<main id="page">
+  <h1>Ilmoita havainto</h1>
+
+  <form id="observationForm">
+    <label for="laji">Laji:</label>
+    <input type="text" id="laji" name="laji" required><br>
+    
+    <label for="lkm">Lkm:</label>
+    <input type="number" id="lkm" name="lkm"><br>
+    
+    <label for="havaintotyyppi">Havaintotyyppi:</label>
+    <select id="havaintotyyppi" name="havaintotyyppi">
+    <option value="näköhavainto">Näköhavainto</option>
+    <option value="kuulohavainto">Kuulohavainto</option>
+    <option value="Näkö- ja kuulohavainto">Näkö- ja kuulohavainto</option>
+    </select><br>    
+    <label for="havaintopaikka">Havaintopaikka:</label>
+    <input type="text" id="havaintopaikka" name="havaintopaikka"><br>
+    <label for="lisatieto">Lisätieto:</label>
+    <input type="text" id="lisatieto" name="lisatieto"><br>
+    
+    <button type="submit" id="submitButton">Ilmoita</button>
+    <div id="msg"></div>
+  </form>
+</main>
+
+
+<script>
+  document.getElementById('observationForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    // Disable the submit button to prevent multiple submissions
+    document.getElementById('submitButton').disabled = true;
+
+    const laji = document.getElementById('laji').value;
+    const lkm = document.getElementById('lkm').value;
+    const havaintotyyppi = document.getElementById('havaintotyyppi').value;
+    const havaintopaikka = document.getElementById('havaintopaikka').value;
+    const lisätieto = document.getElementById('lisatieto').value;
+    const havaintomaa = "Suomi";
+    const havaitsija = localStorage.getItem('userName');
+
+    const observationData = {
+      laji,
+      lkm: parseInt(lkm),
+      havaintotyyppi,
+      lisätieto,
+      havaintopaikka,
+      havaintomaa,
+      havaitsija
+    };
+
+    try {
+      const response = await fetch(`https://${host}:${port}/Lintutietokanta/havainnot/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(observationData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      console.log('Observation added:', data);
+
+      // Show success message
+      showSuccessMessage();
+
+      // Clear the form after a short delay
+      setTimeout(clearForm, 3000); // Adjust the delay time as needed
+
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+      // Handle error
+    }
+  });
+
+  function showSuccessMessage() {
+    const successMessage = document.createElement('div');
+    successMessage.textContent = 'Havainto lisätty onnistuneesti!';
+    successMessage.style.color = 'green'; // Style the success message as needed
+
+    document.getElementById('msg').appendChild(successMessage);
+
+    // Remove the success message after a few seconds (e.g., 3 seconds)
+    setTimeout(() => {
+      successMessage.remove();
+      document.getElementById('submitButton').disabled = false; // Enable the submit button
+    }, 3000); // Adjust the time as needed
+  }
+
+  function clearForm() {
+    document.getElementById('observationForm').reset();
+  }
+</script>
+</body>
+</html>

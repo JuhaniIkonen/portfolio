@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Browse Observations</title>
+  <link rel="stylesheet" href="styles.css">
+   <script src="scripts.js"></script>
+</head>
+<body>
+  <script>logged()</script>
+    <img src="images/logoW1920px.png">
+    <nav>
+        <ul class="leftNav">
+          <li><a href="dashboard.html">Etusivu</a></li>
+          <li><a href="add_observation.html">Ilmoita havaintoja</a></li>
+          <li><a href="browse_observations.html">Selaa havaintoja</a></li>
+          <li><a href="forum.html">Kehitysideoita</a></li>         
+        </ul>
+        
+        <ul class="rightNav">
+            <li id="loggedInUser">Kirjautuneena: </li>
+            <li><button id="logoutButton">Logout</button></li>
+        </ul>
+      </nav>
+
+      <main id="page">
+        <h1>Selaa havaintoja</h1>
+
+        <div id="observationTable">
+        
+          
+      </div>
+        <p id="infoText"></p>
+      </main>
+    
+  <script>
+    let currentSortDirection = 'asc'; // Initialize the sorting direction
+    // Function to display observations in a table format in the DOM
+    function displayObservations(observations) {
+      const observationTable = document.getElementById('observationTable');
+    
+      // Clear previous content
+      observationTable.innerHTML = '';
+    
+      // Define table headers
+      const tableHeaders = ['Laji', 'Lkm', 'Havaintotyyppi', 'Havaintopaikka', 'Havaintoaika', 'Havaitsija', 'Lisätieto'];
+    
+      // Create table element
+      const table = document.createElement('table');
+    
+      // Create table header row
+      const tableHeader = document.createElement('tr');
+    
+      tableHeaders.forEach(headerTitle => {
+        const th = document.createElement('th');
+        th.textContent = headerTitle;
+        th.setAttribute('id', `${headerTitle.toLowerCase()}Header`);
+        th.classList.add('headerButton');
+    
+        th.addEventListener('click', () => {
+          currentSortDirection = sortObservations(observations, headerTitle.toLowerCase(), currentSortDirection);
+          displayObservations(observations);
+        });
+    
+        tableHeader.appendChild(th);
+      });
+    
+      // Append table header row to the table
+      table.appendChild(tableHeader);
+    
+      // ... rest of your code for displaying observations ...
+    
+      // Append the table to the observationTable div
+      observationTable.appendChild(table);
+    
+    
+    
+      // Display each observation as a row in the table
+      observations.forEach(observation => {
+        const observationRow = document.createElement('tr');
+    
+        // Define property names
+        const propertyNames = ['laji', 'lkm', 'havaintotyyppi', 'havaintopaikka', 'havaintoaika', 'havaitsija', 'lisätieto'];
+    
+        // Create table cells for each property
+        propertyNames.forEach(propertyName => {
+          const cell = document.createElement('td');
+          cell.textContent = observation[propertyName];
+          observationRow.appendChild(cell);
+        });
+    
+        // Append the observation row to the table
+        table.appendChild(observationRow);
+      });
+    
+      // Append the table to the observationTable div
+      observationTable.appendChild(table);
+    }
+    
+    function sortObservations(observations, property, currentSortDirection) {
+      const isAscending = currentSortDirection === 'asc';
+    
+      observations.sort((a, b) => {
+        const valueA = a[property];
+        const valueB = b[property];
+    
+        // Check if the property exists in objects a and b
+        if (valueA !== undefined && valueB !== undefined) {
+          // Convert to lowercase for string comparison
+          const lowerValueA = typeof valueA === 'string' ? valueA.toLowerCase() : valueA;
+          const lowerValueB = typeof valueB === 'string' ? valueB.toLowerCase() : valueB;
+    
+          // Handle numeric comparison if the property contains numbers
+          if (!isNaN(lowerValueA) && !isNaN(lowerValueB)) {
+            return isAscending ? lowerValueA - lowerValueB : lowerValueB - lowerValueA;
+          }
+    
+          // Handle string comparison
+          if (lowerValueA < lowerValueB) {
+            return isAscending ? -1 : 1;
+          } else if (lowerValueA > lowerValueB) {
+            return isAscending ? 1 : -1;
+          }
+        }
+    
+        // Handle cases where the property might be undefined
+        if (valueA === undefined && valueB !== undefined) {
+          return isAscending ? 1 : -1;
+        } else if (valueA !== undefined && valueB === undefined) {
+          return isAscending ? -1 : 1;
+        }
+    
+        return 0; // Values are equal or both undefined
+      });
+    
+      return isAscending ? 'desc' : 'asc'; // Return the next sorting direction
+    }
+    
+    
+
+// Fetch observations and display them when the page loads
+document.addEventListener('DOMContentLoaded', async () => {
+  observations = await fetchObservations();
+  displayObservations(observations);
+});
+
+</script>
+</body>
+</html>

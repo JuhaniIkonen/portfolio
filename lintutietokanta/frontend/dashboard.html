@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <script>logged()</script>
+
+  <img src="images/logoW1920px.png" style="width:100%;height:auto">
+  <nav>
+    <ul class="leftNav">
+      <li><a href="dashboard.html">Etusivu</a></li>
+      <li><a href="add_observation.html">Ilmoita havaintoja</a></li>
+      <li><a href="browse_observations.html">Selaa havaintoja</a></li>
+      <li><a href="forum.html">Kehitysideoita</a></li>          
+    </ul>
+    
+    <ul class="rightNav">
+        <li id="loggedInUser">Kirjautuneena: </li>
+        <li><button id="logoutButton">Logout</button></li>
+    </ul>
+  </nav>
+<main id="page">
+  <h1 id="greeting"></h1>
+  <p>Tänne tulee käyttäjien etusivu, jossa voisi olla vaikka käyttäjän tekemien havaintojen lukumäärä, sekä kuinka monta eri lintulajia käyttäjä on havainnut.
+    <br>
+    <br>Otathan huomioon, että sovellus on vielä kehitysvaiheessa eikä kaikki toiminnallisuudet ole vielä aivan loppuun saakka hiottuja. Sivusto on tarkoitettu linturetkille digitaaliseksi havaintokirjaksi. Otan mieluusti kehitysideoita vastaan. Niitä voi antaa <a href="forum.html">Kehitysideoita</a> välilehdellä</p>
+</main>
+ 
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const userName = localStorage.getItem('userName');
+
+      if (userName) {
+        const greetingElement = document.getElementById('greeting');
+        greetingElement.textContent = `Terve, ${userName}!`;
+      } else {
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
+</body>
+</html>

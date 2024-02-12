@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+    <script>logged()</script>
+
+  <img src="images/logoW1920px.png" style="width:100%;height:auto">
+  <nav>
+    <ul class="leftNav">
+      <li><a href="dashboard.html">Etusivu</a></li>
+      <li><a href="add_observation.html">Ilmoita havaintoja</a></li>
+      <li><a href="browse_observations.html">Selaa havaintoja</a></li>
+      <li><a href="forum.html">Kehitysideoita</a></li>
+                
+    </ul>
+    
+    <ul class="rightNav">
+        <li id="loggedInUser">Kirjautuneena: </li>
+        <li><button id="logoutButton">Logout</button></li>
+    </ul>
+  </nav>
+  <main id="page">
+    <h1>Palautelaatikko</h1>
+    <p>Tänne voi laittaa vapaasti palautetta ja hyviä kehitysideoita! Kehityksen edetessä päivittelen tälle sivulle tekemiäni muutoksia.</p>
+  
+    <form id="forumForm">
+      <label for="text">Your message:</label>
+      <textarea id="text" name="text" required></textarea><br>
+  
+      <button type="submit" id="submitButton">Submit</button>
+      <div id="msg"></div>
+    </form>
+  
+    <div id="postsContainer">
+      <!-- Posts will be displayed here -->
+    </div>
+  </main>
+
+  <script>
+    // Function to display a message for a specified duration
+    function displayMessage(message, duration) {
+      const msgDiv = document.getElementById('msg');
+      msgDiv.textContent = message;
+
+      setTimeout(() => {
+        msgDiv.textContent = '';
+      }, duration);
+    }
+
+    // Function to fetch and display posts
+    async function fetchPosts() {
+      try {
+        const response = await fetch(`https://${host}:${port}/Lintutietokanta/forum/`);
+        if (response.ok) {
+          const posts = await response.json();
+          displayPosts(posts);
+        } else {
+          console.error('Failed to fetch posts.');
+        }
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      }
+    }
+
+    // Function to display fetched posts
+    function displayPosts(posts) {
+      const postsContainer = document.getElementById('postsContainer');
+      postsContainer.innerHTML = ''; // Clear previous posts
+  
+      // Reverse the posts array and display in reversed order
+      posts.forEach(post => {
+        const postDiv = document.createElement('div');
+        postDiv.id = post._id; // Set post._id as the id attribute
+        postDiv.classList.add('forumPost'); // Add forumPost class to the div
+  
+        const posterHeader = document.createElement('h5');
+        posterHeader.textContent = `${post.timestamp} ${post.poster} kirjoitti:`;
+        postDiv.appendChild(posterHeader);
+  
+        const textContent = document.createElement('p');
+        textContent.textContent = post.text;
+        postDiv.appendChild(textContent);
+  
+        postsContainer.prepend(postDiv); // Prepend post instead of appending
+      });
+    }
+
+    // Form submission event listener
+    document.getElementById('forumForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const submitButton = document.getElementById('submitButton');
+      submitButton.disabled = true;
+
+      const poster = localStorage.getItem('userName');
+      const text = document.getElementById('text').value;
+
+      const forumPost = {
+        poster: poster,
+        text: text
+      };
+
+      displayMessage('Post submitted', 2000);
+
+      const response = await fetch(`https://${host}:${port}/Lintutietokanta/forum/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(forumPost)
+      });
+
+      if (response.ok) {
+        // If post is successful, fetch and display updated posts
+        fetchPosts();
+        setTimeout(() => {
+          submitButton.disabled = false;
+        }, 2000);
+      } else {
+        console.error('Failed to submit the post.');
+        submitButton.disabled = false;
+      }
+    });
+
+    // Initial fetch of posts
+    fetchPosts();
+  </script>
+</body>
+</html>

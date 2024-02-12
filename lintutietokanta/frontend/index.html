@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+
+<body>
+  <img src="images/logoW1920px.png" style="width:1920px;height:auto">
+  <nav>
+    <ul class="leftNav">
+      <li><a href="dashboard.html">Etusivu</a></li>
+      <li><a href="add_observation.html">Ilmoita havaintoja</a></li>
+      <li><a href="browse_observations.html">Selaa havaintoja</a></li>
+      <li><a href="forum.html">Kehitysideoita</a></li>
+                
+    </ul>
+    
+    <ul class="rightNav">
+        <li id="loggedInUser">Kirjautuneena: </li>
+        <li><button id="logoutButton">Logout</button></li>
+    </ul>
+  </nav>
+  <main id="page">
+    <h1>Tervetuloa Tinttitetokantaan!</h1>
+    <p>Käyttääksesi sovellusta sinun pitää kirjautua sisään. Jos sinulla ei ole tunnuksia, voit pyytää sellaiset sivuston ylläpitäjältä Juhani Ikoselta tai voit kokeilla sivustoa testikäyttäjänä:<br><br> Username: testi <br>Password: testi52<br><br></p>
+  <form id="loginForm">
+    <input type="text" id="name" placeholder="Username" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+    <button type="submit">Login</button>
+  </form>
+<footer>
+
+</footer>
+</main>
+
+
+
+
+
+
+  <script>
+    
+    document.getElementById('loginForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      
+      const name = document.getElementById('name').value;
+      const password = document.getElementById('password').value;
+      //console.log(name, password)
+      
+      try {
+        const userData = {
+          name: name,
+          password: password
+        };
+        console.log(userData)
+        const response = await fetch(`https://${host}:${port}/Lintutietokanta/users`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(userData)
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          // Login successful
+          console.log('Login successful');
+          // Save user data to localStorage or session storage if needed
+          localStorage.setItem('userId', data.userId);
+          localStorage.setItem('userName', data.userName);
+          
+          // Redirect to a different page or perform other actions upon successful login
+          // For example, redirect to a dashboard page
+          window.location.href = 'dashboard.html';
+        } else {
+          // Login failed
+          console.log('Login failed');
+          alert('Login failed. Please check your credentials.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while logging in. Please try again later.');
+      }
+    });
+  </script>
+</body>
+</html>
